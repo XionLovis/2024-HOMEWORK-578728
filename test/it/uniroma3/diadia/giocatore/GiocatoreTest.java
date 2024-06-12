@@ -1,36 +1,28 @@
 package it.uniroma3.diadia.giocatore;
+
 import static org.junit.Assert.*;
 
-import org.junit.Test;
-
-import it.uniroma3.diadia.attrezzi.Attrezzo;
-import it.uniroma3.diadia.giocatore.Borsa;
-import it.uniroma3.diadia.giocatore.Giocatore;
+import org.junit.*;
 
 public class GiocatoreTest {
-
+	
+	Giocatore giocatore = new Giocatore();
+	
 	@Test
-	public void testGetBorsa() {
-		Giocatore giocatore = new Giocatore();
-
-		assertNotNull(giocatore.getBorsa());
+	public void testGetCfuDeafult() {
+		assertEquals(20, giocatore.getCfu());
 	}
 	
 	@Test
 	public void testSetCfu() {
-		Giocatore giocatore = new Giocatore();
-		Attrezzo lighAttrezzo = new Attrezzo("Penna", 1);
-		Attrezzo heavyAttrezzo = new Attrezzo("Libro", 5);
+		giocatore.setCfu(3);
 		
-		giocatore.setCfu(15);
-		assertEquals(15, giocatore.getCfu());
+		assertEquals(3, giocatore.getCfu());
 	}
 	
-	@Test 
-	public void testGetCfu() {
-		Giocatore giocatore = new Giocatore();
-
-		assertEquals(20, giocatore.getCfu());
+	@Test
+	public void testGetBorsaDefaul() {
+		assertNotNull(giocatore.getBorsa());
 	}
 
 }

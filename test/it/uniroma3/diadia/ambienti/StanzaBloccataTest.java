@@ -9,38 +9,45 @@ import org.junit.Test;
 import it.uniroma3.diadia.attrezzi.Attrezzo;
 
 public class StanzaBloccataTest {
-	
-	private StanzaBloccata stanzab;
+
+	private StanzaBloccata stanzaBloccata;
 	private Stanza stanza;
 	private Attrezzo attrezzo;
 	
 	@Before
 	public void setUp() throws Exception {
-		stanzab = new StanzaBloccata("StanzaBloccata", "ovest", "grimaldello");
+		stanzaBloccata = new StanzaBloccata("StanzaBloccata", Direzione.ovest, "grimaldello");
 		stanza = new Stanza("Stanzetta");
 		attrezzo = new Attrezzo("grimaldello", 1);
-		stanzab.impostaStanzaAdiacente("ovest", stanza);
+		stanzaBloccata.impostaStanzaAdiacente(Direzione.ovest, stanza);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 	}
-
-	@Test
-	public void testGetStanzaAdiacenteDirezioneBloccata() {
-		assertEquals(stanzab, stanzab.getStanzaAdiacente("ovest"));
-	}
 	
 	@Test
-	public void testGetStanzaAdiacenteDirezioneSbloccata() {
-		stanzab.addAttrezzo(attrezzo);
-		assertEquals(stanza, stanzab.getStanzaAdiacente("ovest"));
+	public void testGetStanzaAdiacenteDirezioneBloccata() {
+		assertEquals(stanzaBloccata, stanzaBloccata.getStanzaAdiacente(Direzione.ovest));
+	}
+
+	@Test
+	public void testStanzaAdiacenteDirezioneSbloccata() {
+		stanzaBloccata.addAttrezzo(attrezzo);
+		assertEquals(stanza, stanzaBloccata.getStanzaAdiacente(Direzione.ovest));
 	}
 	
 	@Test
 	public void testGetDescrizioneDirezioneBloccata() {
-		String e = "Stanza bloccata nella direzione: ovest" + "\n Prendi il grimaldello e posalo nella stanza";
-		assertEquals(e, stanzab.getDescrizione());
+		String description = "Stanza bloccata nella direzione: ovest" + "\nPrendi il grimaldello e posalo nella stanza";
+		assertEquals(description, stanzaBloccata.getDescrizione());
 	}
-
+	
+	@Test
+	public void testGetDescrizioneDirezioneSbloccata() {
+		stanzaBloccata.addAttrezzo(attrezzo);
+		assertEquals(stanzaBloccata.toString(), stanzaBloccata.getDescrizione());
+	}
+	
+	
 }

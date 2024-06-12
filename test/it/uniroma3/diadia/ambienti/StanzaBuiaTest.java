@@ -11,12 +11,12 @@ import it.uniroma3.diadia.attrezzi.Attrezzo;
 public class StanzaBuiaTest {
 	
 	private StanzaBuia stanza;
-	private Attrezzo lumino;
+	private Attrezzo attrezzoLuminoso;
 	
 	@Before
 	public void setUp() throws Exception {
-		stanza = new StanzaBuia("StanzaBuia", "lumino");
-		lumino = new Attrezzo("lumino", 1);
+		stanza = new StanzaBuia("StanzaBuia", "lanterna");
+		attrezzoLuminoso = new Attrezzo("lanterna", 3);
 	}
 	
 	@After
@@ -25,14 +25,14 @@ public class StanzaBuiaTest {
 
 	@Test
 	public void testGetDescrizioneConAttrezzo() {
-		stanza.addAttrezzo(lumino);
+		stanza.addAttrezzo(attrezzoLuminoso);
 		assertEquals(stanza.toString(), stanza.getDescrizione());
 	}
 	
 	@Test
 	public void testGetDescrizioneSenzaAttrezzo() {
-		String e = "qui c'è un buio pesto";
-		assertEquals(e, stanza.getDescrizione());
+		String description = "qui c'è un buio pesto";
+		assertEquals(description, stanza.getDescrizione());
 	}
 
 }

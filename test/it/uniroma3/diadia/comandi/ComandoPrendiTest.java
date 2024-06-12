@@ -2,32 +2,34 @@ package it.uniroma3.diadia.comandi;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Scanner;
+
+import org.junit.*;
 
 import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.IOConsole;
 import it.uniroma3.diadia.Partita;
+import it.uniroma3.diadia.ambienti.Labirinto;
 import it.uniroma3.diadia.attrezzi.Attrezzo;
 
 public class ComandoPrendiTest {
-	
+
 	private Partita partita;
 	private Attrezzo attrezzo;
 	private Attrezzo attrezzoPesante;
-	private Attrezzo attrezzoNull;
 	private Comando comando;
 	private IO io;
+	Labirinto labirinto;
 	
-	@Before
+	@Before 
 	public void setUp() throws Exception {
-		partita = new Partita();
-		attrezzo = new Attrezzo("martello", 2);
+		labirinto = Labirinto.newBuilder("labirinto2.txt").getLabirinto();
+
+		partita = new Partita(labirinto);
+		attrezzo = new Attrezzo("palla", 2);
 		attrezzoPesante = new Attrezzo("roccia", 11);
-		attrezzoNull = null;
 		comando = new ComandoPrendi();
-		io = new IOConsole();
+		io = new IOConsole(new Scanner(System.in));
 		comando.setIo(io);
 	}
 	
@@ -35,38 +37,38 @@ public class ComandoPrendiTest {
 	public void tearDown() throws Exception {
 	}
 	
-	public boolean attrezzoPresente(String s) {
-		Attrezzo[] array = partita.getLabirinto().getStanzaCorrente().getAttrezzi();
+	public boolean attrezzoPresente(String attrezzo) {
 		
-		for (Attrezzo a : array) {
-			if (a != null && s.equals(a.getNome())) {
-				return true;
-			}
+		if (partita.getStanzaCorrente().getAttrezzo(attrezzo) == null) {
+			return false;
 		}
 		
-		return false;
+		return true;
 	}
-
+	
 	@Test
 	public void testAttrezzoPreso() {
-		partita.getLabirinto().getStanzaCorrente().addAttrezzo(attrezzo);
-		comando.setParametro("martello");
+		partita.getStanzaCorrente().addAttrezzo(attrezzo);
+		comando.setParametro("chiave");
 		comando.esegui(partita);
-		assertFalse(attrezzoPresente("martello"));
+		
+		assertFalse(attrezzoPresente("chiave"));
 	}
 	
 	@Test
 	public void testAttrezzoNonPresente() {
-		comando.setParametro("martello");
+		comando.setParametro("chiave");
 		comando.esegui(partita);
-		assertFalse(attrezzoPresente("martello"));
+		
+		assertFalse(attrezzoPresente("chiave"));
 	}
 	
 	@Test
-	public void testAttrezzoPresente() {
-		partita.getLabirinto().getStanzaCorrente().addAttrezzo(attrezzoPesante);
+	public void testAttrezzoPesante() {
+		partita.getStanzaCorrente().addAttrezzo(attrezzoPesante);
 		comando.setParametro("roccia");
 		comando.esegui(partita);
+		
 		assertTrue(attrezzoPresente("roccia"));
 	}
 

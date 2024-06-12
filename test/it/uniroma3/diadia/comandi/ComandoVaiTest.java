@@ -2,14 +2,19 @@ package it.uniroma3.diadia.comandi;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import org.junit.*;
 
 import it.uniroma3.diadia.DiaDia;
+import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.IOConsole;
 import it.uniroma3.diadia.IOSimulator;
 import it.uniroma3.diadia.Partita;
+import it.uniroma3.diadia.ambienti.Direzione;
+import it.uniroma3.diadia.ambienti.Labirinto;
 import it.uniroma3.diadia.ambienti.Stanza;
 import it.uniroma3.diadia.fixture.Fixture;
 
@@ -17,16 +22,30 @@ public class ComandoVaiTest {
 	
 	private Stanza stanza1;
 	private Stanza stanza2;
-	private Comando vai;
-	private Partita partita;
+	private Comando comando;
+	private Partita partita1;
+	private Partita partita2;
+	
+	List<String> righeDaLeggere1;
+	List<String> righeDaLeggere2;
+	
+	Labirinto labirinto1;
+	Labirinto labirinto2;
+	private IO io;
 	
 	@Before
 	public void setUp() throws Exception {
-		stanza1 = new Stanza("aula 1");
-		stanza2 = new Stanza("aula 2");
-		vai = new ComandoVai();
-		partita = new Partita();
-		vai.setIo(new IOConsole());
+		io = new IOConsole(new Scanner(System.in));
+		stanza1 = new Stanza("Aula N11");
+		stanza2 = new Stanza("Aula N10");
+		comando = new ComandoVai();
+		
+		labirinto1 = Labirinto.newBuilder("labirinto2.txt").getLabirinto();
+		
+		partita1 = new Partita(labirinto1);
+		comando.setIo(io);
+		righeDaLeggere1 = new ArrayList<>();
+		righeDaLeggere2 = new ArrayList<>();
 	}
 	
 	@After
@@ -34,34 +53,30 @@ public class ComandoVaiTest {
 	}
 
 	@Test
-	public void testVaiNull() {
-		partita.getLabirinto().setStanzaCorrente(stanza1);
-		vai.esegui(partita);
-		assertEquals(stanza1, partita.getLabirinto().getStanzaCorrente());
-	}
-
-	@Test
 	public void testVaiDirezioneEsistente() {
-		partita.getLabirinto().setStanzaCorrente(stanza1);
-		stanza1.impostaStanzaAdiacente("sud-ovest", stanza2);
-		vai.setParametro("sud-ovest");
-		vai.esegui(partita);
-		assertEquals(stanza2, partita.getLabirinto().getStanzaCorrente());
+		partita1.setStanzaCorrente(stanza1);
+		stanza1.impostaStanzaAdiacente(Direzione.sud, stanza2);
+		comando.setParametro("sud-ovest");
+		comando.esegui(partita1);
+		
+		assertEquals(stanza2, partita1.getStanzaCorrente());
 	}
 	
 	@Test
 	public void testVaiDirezioneInesistente() {
-		partita.getLabirinto().setStanzaCorrente(stanza1);
-		stanza1.impostaStanzaAdiacente("sud-ovest", stanza2);
-		vai.setParametro("in fondo a sinistra");
-		vai.esegui(partita);
-		assertNotEquals(stanza2, partita.getLabirinto().getStanzaCorrente());
+		partita1.setStanzaCorrente(stanza1);
+		stanza1.impostaStanzaAdiacente(Direzione.sud, stanza2);
+		comando.setParametro("in culonia");
+		comando.esegui(partita1);
+		
+		assertNotEquals(stanza2, partita1.getStanzaCorrente());
 	}
 	
 	@Test
-	public void testPartitaConComandoVai() {
-		String[] righeDaLeggereStrings = {"vai nord", "fine"};
-		IOSimulator io = Fixture.creaSimulazionePartitaEGioca(righeDaLeggereStrings);
+	public void testPartitaConComandoVai() throws Exception {
+		righeDaLeggere1.add("vai nord");
+		
+		IOSimulator io = Fixture.creaSimulazionePartitaGiocaFacile(righeDaLeggere1);
 		
 		assertTrue(io.hasNextMessaggio());
 		assertEquals(DiaDia.MESSAGGIO_BENVENUTO, io.nextMessaggio());
@@ -70,4 +85,37 @@ public class ComandoVaiTest {
 		assertTrue(io.hasNextMessaggio());
 		assertEquals("Hai vinto!", io.nextMessaggio());
 	}
+
+	@Test
+	public void testPartitaConComandoVaiOvest() throws Exception {
+		righeDaLeggere2.add("vai ovest");
+		righeDaLeggere2.add("fine");
+		
+		IOSimulator io = Fixture.creaSimulazionePartitaGiocaHard(righeDaLeggere2);
+		
+		assertTrue(io.hasNextMessaggio());
+		assertEquals(DiaDia.MESSAGGIO_BENVENUTO, io.nextMessaggio());
+		assertTrue(io.hasNextMessaggio());
+		assertEquals("Aula N10", io.nextMessaggio());
+		assertTrue(io.hasNextMessaggio());
+		assertEquals(ComandoFine.MESSAGGIO_FINE, io.nextMessaggio());
+	}
+	
+	@Test
+	public void testPartitaConComandoVaiOvestEst() throws Exception {
+		righeDaLeggere2.add("vai ovest");
+		righeDaLeggere2.add("vai est");
+		righeDaLeggere2.add("fine");
+		
+		IOSimulator io = Fixture.creaSimulazionePartitaGiocaHard(righeDaLeggere2);
+		
+		assertTrue(io.hasNextMessaggio());
+		assertEquals(DiaDia.MESSAGGIO_BENVENUTO, io.nextMessaggio());
+		assertTrue(io.hasNextMessaggio());
+		assertEquals("Aula N10", io.nextMessaggio());
+		assertTrue(io.hasNextMessaggio());
+		assertEquals("Atrio", io.nextMessaggio());
+		assertEquals(ComandoFine.MESSAGGIO_FINE, io.nextMessaggio());
+	}
+	
 }
